@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minhas Finanças Pessoais</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #ffbe0b;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .card-title {
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .card-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .card-change {
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .income .card-icon {
+            background-color: rgba(76, 201, 240, 0.2);
+            color: var(--success);
+        }
+        
+        .expense .card-icon {
+            background-color: rgba(247, 37, 133, 0.2);
+            color: var(--danger);
+        }
+        
+        .loan .card-icon {
+            background-color: rgba(255, 190, 11, 0.2);
+            color: var(--warning);
+        }
+        
+        .balance .card-icon {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary);
+        }
+        
+        .positive {
+            color: var(--success);
+        }
+        
+        .negative {
+            color: var(--danger);
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray);
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d0004b;
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #00b4d8;
+        }
+        
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .transaction-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .transaction-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .transaction-details h4 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        
+        .transaction-details p {
+            font-size: 14px;
+            color: var(--gray);
+        }
+        
+        .transaction-amount {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .loan-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .loan-info {
+            flex: 1;
+        }
+        
+        .loan-details h4 {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .loan-details p {
+            font-size: 14px;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+        
+        .loan-amount {
+            font-weight: 700;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .loan-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #d0d0d0;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background-color: var(--success);
+        }
+        
+        .notification.error {
+            background-color: var(--danger);
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-wallet"></i> Minhas Finanças
+            </div>
+            <div class="user-info">
+                <span>Bem-vindo, João</span>
+                <div class="user-avatar">JS</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="dashboard">
+            <div class="card balance">
+                <div class="card-header">
+                    <h3 class="card-title">Saldo Total</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalBalance">R$ 0,00</div>
+                <div class="card-change">
+                    <i class="fas fa-arrow-up"></i>
+                    <span>Atualizado hoje</span>
+                </div>
+            </div>
+            
+            <div class="card income">
+                <div class="card-header">
+                    <h3 class="card-title">Receitas</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-arrow-down"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalIncome">R$ 0,00</div>
+                <div class="card-change positive">
+                    <i class="fas fa-arrow-up"></i>
+                    <span id="incomeChange">0% este mês</span>
+                </div>
+            </div>
+            
+            <div class="card expense">
+                <div class="card-header">
+                    <h3 class="card-title">Despesas</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-arrow-up"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalExpense">R$ 0,00</div>
+                <div class="card-change negative">
+                    <i class="fas fa-arrow-down"></i>
+                    <span id="expenseChange">0% este mês</span>
+                </div>
+            </div>
+            
+            <div class="card loan">
+                <div class="card-header">
+                    <h3 class="card-title">Empréstimos</h3>
+                    <div class="card-icon">
+                        <i class="fas fa-hand-holding-usd"></i>
+                    </div>
+                </div>
+                <div class="card-value" id="totalLoans">R$ 0,00</div>
+                <div class="card-change">
+                    <i class="fas fa-exchange-alt"></i>
+                    <span id="loansCount">0 ativos</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-plus-circle"></i> Adicionar Transação
+                </h2>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="expense">Despesa</div>
+                    <div class="tab" data-tab="income">Receita</div>
+                    <div class="tab" data-tab="loan">Empréstimo</div>
+                </div>
+                
+                <form id="transactionForm">
+                    <div class="tab-content active" id="expense-tab">
+                        <div class="form-group">
+                            <label for="expense-desc">Descrição</label>
+                            <input type="text" id="expense-desc" placeholder="Ex: Almoço" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expense-value">Valor (R$)</label>
+                            <input type="number" id="expense-value" step="0.01" min="0.01" placeholder="0,00" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expense-category">Categoria</label>
+                            <select id="expense-category" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="alimentacao">Alimentação</option>
+                                <option value="transporte">Transporte</option>
+                                <option value="moradia">Moradia</option>
+                                <option value="saude">Saúde</option>
+                                <option value="lazer">Lazer</option>
+                                <option value="educacao">Educação</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="expense-date">Data</label>
+                            <input type="date" id="expense-date" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-danger btn-block">
+                            <i class="fas fa-plus"></i> Adicionar Despesa
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content" id="income-tab">
+                        <div class="form-group">
+                            <label for="income-desc">Descrição</label>
+                            <input type="text" id="income-desc" placeholder="Ex: Salário" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="income-value">Valor (R$)</label>
+                            <input type="number" id="income-value" step="0.01" min="0.01" placeholder="0,00" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="income-category">Categoria</label>
+                            <select id="income-category" required>
+                                <option value="">Selecione uma categoria</option>
+                                <option value="salario">Salário</option>
+                                <option value="freelancer">Freelancer</option>
+                                <option value="investimentos">Investimentos</option>
+                                <option value="presente">Presente</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="income-date">Data</label>
+                            <input type="date" id="income-date" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-block">
+                            <i class="fas fa-plus"></i> Adicionar Receita
+                        </button>
+                    </div>
+                    
+                    <div class="tab-content" id="loan-tab">
+                        <div class="form-group">
+                            <label for="loan-type">Tipo de Empréstimo</label>
+                            <select id="loan-type" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="emprestado">Emprestado</option>
+                                <option value="tomado">Tomado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loan-desc">Descrição</label>
+                            <input type="text" id="loan-desc" placeholder="Ex: Empréstimo para João" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loan-value">Valor (R$)</label>
+                            <input type="number" id="loan-value" step="0.01" min="0.01" placeholder="0,00" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loan-date">Data</label>
+                            <input type="date" id="loan-date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loan-due">Data de Vencimento</label>
+                            <input type="date" id="loan-due" required>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-block">
+                            <i class="fas fa-plus"></i> Adicionar Empréstimo
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-pie"></i> Dashboard
+                </h2>
+                
+                <div class="tabs">
+                    <div class="tab active" data-tab="chart-expenses">Despesas</div>
+                    <div class="tab" data-tab="chart-income">Receitas</div>
+                    <div class="tab" data-tab="chart-loans">Empréstimos</div>
+                </div>
+                
+                <div class="tab-content active" id="chart-expenses-tab">
+                    <div class="chart-container">
+                        <canvas id="expensesChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="chart-income-tab">
+                    <div class="chart-container">
+                        <canvas id="incomeChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="chart-loans-tab">
+                    <div class="chart-container">
+                        <canvas id="loansChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2 class="section-title">
+                <i class="fas fa-list"></i> Transações Recentes
+            </h2>
+            
+            <div class="tabs">
+                <div class="tab active" data-tab="recent-all">Todas</div>
+                <div class="tab" data-tab="recent-expenses">Despesas</div>
+                <div class="tab" data-tab="recent-income">Receitas</div>
+                <div class="tab" data-tab="recent-loans">Empréstimos</div>
+            </div>
+            
+            <div class="tab-content active" id="recent-all-tab">
+                <div class="transaction-list" id="allTransactions">
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>Nenhuma transação registrada</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="recent-expenses-tab">
+                <div class="transaction-list" id="expensesList">
+                    <div class="empty-state">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <p>Nenhuma despesa registrada</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="recent-income-tab">
+                <div class="transaction-list" id="incomeList">
+                    <div class="empty-state">
+                        <i class="fas fa-coins"></i>
+                        <p>Nenhuma receita registrada</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="recent-loans-tab">
+                <div class="transaction-list" id="loansList">
+                    <div class="empty-state">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <p>Nenhum empréstimo registrado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // Dados de exemplo
+        let transactions = {
+            expenses: [
+                { id: 1, description: "Supermercado", value: 250.75, category: "alimentacao", date: "2023-05-15" },
+                { id: 2, description: "Conta de Luz", value: 120.50, category: "moradia", date: "2023-05-10" },
+                { id: 3, description: "Cinema", value: 45.00, category: "lazer", date: "2023-05-08" }
+            ],
+            income: [
+                { id: 1, description: "Salário", value: 2500.00, category: "salario", date: "2023-05-05" },
+                { id: 2, description: "Freelance", value: 800.00, category: "freelancer", date: "2023-05-12" }
+            ],
+            loans: [
+                { id: 1, type: "emprestado", description: "Empréstimo para Maria", value: 300.00, date: "2023-05-01", dueDate: "2023-06-01", status: "pendente" },
+                { id: 2, type: "tomado", description: "Empréstimo do Banco", value: 1500.00, date: "2023-04-20", dueDate: "2023-10-20", status: "pendente" }
+            ]
+        };
+        
+        // Configuração inicial
+        document.addEventListener('DOMContentLoaded', function() {
+            // Definir data atual como padrão
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('expense-date').value = today;
+            document.getElementById('income-date').value = today;
+            document.getElementById('loan-date').value = today;
+            
+            // Calcular data de vencimento padrão (30 dias)
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('loan-due').value = dueDate.toISOString().split('T')[0];
+            
+            // Inicializar gráficos
+            initCharts();
+            
+            // Atualizar dashboard
+            updateDashboard();
+            
+            // Carregar transações recentes
+            loadRecentTransactions();
+            
+            // Configurar abas
+            setupTabs();
+            
+            // Configurar formulário
+            setupForm();
+        });
+        
+        // Função para configurar as abas
+        function setupTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabContainer = this.parentElement;
+                    const tabName = this.getAttribute('data-tab');
+                    
+                    // Remover classe active de todas as abas
+                    tabContainer.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    
+                    // Adicionar classe active à aba clicada
+                    this.classList.add('active');
+                    
+                    // Esconder todos os conteúdos de aba
+                    const tabContents = document.querySelectorAll(`.tab-content`);
+                    tabContents.forEach(content => {
+                        if (content.id.includes(tabName) || content.id.includes(tabName.split('-')[1])) {
+                            content.classList.add('active');
+                        } else {
+                            content.classList.remove('active');
+                        }
+                    });
+                });
+            });
+        }
+        
+        // Função para configurar o formulário
+        function setupForm() {
+            const form = document.getElementById('transactionForm');
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const activeTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                
+                if (activeTab === 'expense') {
+                    addExpense();
+                } else if (activeTab === 'income') {
+                    addIncome();
+                } else if (activeTab === 'loan') {
+                    addLoan();
+                }
+            });
+        }
+        
+        // Função para adicionar despesa
+        function addExpense() {
+            const description = document.getElementById('expense-desc').value;
+            const value = parseFloat(document.getElementById('expense-value').value);
+            const category = document.getElementById('expense-category').value;
+            const date = document.getElementById('expense-date').value;
+            
+            const newExpense = {
+                id: transactions.expenses.length > 0 ? Math.max(...transactions.expenses.map(e => e.id)) + 1 : 1,
+                description,
+                value,
+                category,
+                date
+            };
+            
+            transactions.expenses.push(newExpense);
+            
+            // Limpar formulário
+            document.getElementById('expense-desc').value = '';
+            document.getElementById('expense-value').value = '';
+            document.getElementById('expense-category').value = '';
+            
+            // Atualizar dashboard
+            updateDashboard();
+            updateCharts();
+            loadRecentTransactions();
+            
+            // Mostrar notificação
+            showNotification('Despesa adicionada com sucesso!', 'success');
+        }
+        
+        // Função para adicionar receita
+        function addIncome() {
+            const description = document.getElementById('income-desc').value;
+            const value = parseFloat(document.getElementById('income-value').value);
+            const category = document.getElementById('income-category').value;
+            const date = document.getElementById('income-date').value;
+            
+            const newIncome = {
+                id: transactions.income.length > 0 ? Math.max(...transactions.income.map(i => i.id)) + 1 : 1,
+                description,
+                value,
+                category,
+                date
+            };
+            
+            transactions.income.push(newIncome);
+            
+            // Limpar formulário
+            document.getElementById('income-desc').value = '';
+            document.getElementById('income-value').value = '';
+            document.getElementById('income-category').value = '';
+            
+            // Atualizar dashboard
+            updateDashboard();
+            updateCharts();
+            loadRecentTransactions();
+            
+            // Mostrar notificação
+            showNotification('Receita adicionada com sucesso!', 'success');
+        }
+        
+        // Função para adicionar empréstimo
+        function addLoan() {
+            const type = document.getElementById('loan-type').value;
+            const description = document.getElementById('loan-desc').value;
+            const value = parseFloat(document.getElementById('loan-value').value);
+            const date = document.getElementById('loan-date').value;
+            const dueDate = document.getElementById('loan-due').value;
+            
+            const newLoan = {
+                id: transactions.loans.length > 0 ? Math.max(...transactions.loans.map(l => l.id)) + 1 : 1,
+                type,
+                description,
+                value,
+                date,
+                dueDate,
+                status: 'pendente'
+            };
+            
+            transactions.loans.push(newLoan);
+            
+            // Limpar formulário
+            document.getElementById('loan-desc').value = '';
+            document.getElementById('loan-value').value = '';
+            
+            // Atualizar dashboard
+            updateDashboard();
+            updateCharts();
+            loadRecentTransactions();
+            
+            // Mostrar notificação
+            showNotification('Empréstimo adicionado com sucesso!', 'success');
+        }
+        
+        // Função para atualizar o dashboard
+        function updateDashboard() {
+            // Calcular totais
+            const totalIncome = transactions.income.reduce((sum, item) => sum + item.value, 0);
+            const totalExpense = transactions.expenses.reduce((sum, item) => sum + item.value, 0);
+            const totalLoans = transactions.loans.reduce((sum, item) => sum + item.value, 0);
+            const totalBalance = totalIncome - totalExpense;
+            
+            // Atualizar cards
+            document.getElementById('totalBalance').textContent = formatCurrency(totalBalance);
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpense').textContent = formatCurrency(totalExpense);
+            document.getElementById('totalLoans').textContent = formatCurrency(totalLoans);
+            
+            // Atualizar informações adicionais
+            document.getElementById('incomeChange').textContent = '0% este mês';
+            document.getElementById('expenseChange').textContent = '0% este mês';
+            document.getElementById('loansCount').textContent = `${transactions.loans.length} ativos`;
+            
+            // Atualizar cor do saldo
+            const balanceElement = document.getElementById('totalBalance');
+            if (totalBalance >= 0) {
+                balanceElement.classList.add('positive');
+                balanceElement.classList.remove('negative');
+            } else {
+                balanceElement.classList.add('negative');
+                balanceElement.classList.remove('positive');
+            }
+        }
+        
+        // Função para inicializar os gráficos
+        function initCharts() {
+            // Gráfico de despesas
+            const expensesCtx = document.getElementById('expensesChart').getContext('2d');
+            window.expensesChart = new Chart(expensesCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        data: [],
+                        backgroundColor: [
+                            '#FF6384',
+                            '#36A2EB',
+                            '#FFCE56',
+                            '#4BC0C0',
+                            '#9966FF',
+                            '#FF9F40',
+                            '#8AC926'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Despesas por Categoria'
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de receitas
+            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+            window.incomeChart = new Chart(incomeCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Receitas',
+                        data: [],
+                        backgroundColor: '#4CC9F0',
+                        borderColor: '#4CC9F0',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        title: {
+                            display: true,
+                            text: 'Receitas por Categoria'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toFixed(2);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Gráfico de empréstimos
+            const loansCtx = document.getElementById('loansChart').getContext('2d');
+            window.loansChart = new Chart(loansCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Emprestados', 'Tomados'],
+                    datasets: [{
+                        data: [0, 0],
+                        backgroundColor: [
+                            '#FFBE0B',
+                            '#F72585'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Empréstimos por Tipo'
+                        }
+                    }
+                }
+            });
+            
+            // Atualizar gráficos com dados iniciais
+            updateCharts();
+        }
+        
+        // Função para atualizar os gráficos
+        function updateCharts() {
+            // Atualizar gráfico de despesas
+            const expenseCategories = {};
+            transactions.expenses.forEach(expense => {
+                if (expenseCategories[expense.category]) {
+                    expenseCategories[expense.category] += expense.value;
+                } else {
+                    expenseCategories[expense.category] = expense.value;
+                }
+            });
+            
+            const expenseLabels = Object.keys(expenseCategories).map(cat => getCategoryName(cat));
+            const expenseData = Object.values(expenseCategories);
+            
+            window.expensesChart.data.labels = expenseLabels;
+            window.expensesChart.data.datasets[0].data = expenseData;
+            window.expensesChart.update();
+            
+            // Atualizar gráfico de receitas
+            const incomeCategories = {};
+            transactions.income.forEach(income => {
+                if (incomeCategories[income.category]) {
+                    incomeCategories[income.category] += income.value;
+                } else {
+                    incomeCategories[income.category] = income.value;
+                }
+            });
+            
+            const incomeLabels = Object.keys(incomeCategories).map(cat => getCategoryName(cat));
+            const incomeData = Object.values(incomeCategories);
+            
+            window.incomeChart.data.labels = incomeLabels;
+            window.incomeChart.data.datasets[0].data = incomeData;
+            window.incomeChart.update();
+            
+            // Atualizar gráfico de empréstimos
+            const loanTypes = {
+                'emprestado': 0,
+                'tomado': 0
+            };
+            
+            transactions.loans.forEach(loan => {
+                loanTypes[loan.type] += loan.value;
+            });
+            
+            window.loansChart.data.datasets[0].data = [loanTypes.emprestado, loanTypes.tomado];
+            window.loansChart.update();
+        }
+        
+        // Função para carregar transações recentes
+        function loadRecentTransactions() {
+            // Combinar todas as transações
+            const allTransactions = [
+                ...transactions.expenses.map(e => ({...e, type: 'expense'})),
+                ...transactions.income.map(i => ({...i, type: 'income'})),
+                ...transactions.loans.map(l => ({...l, type: 'loan'}))
+            ];
+            
+            // Ordenar por data (mais recentes primeiro)
+            allTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            // Limitar a 10 transações
+            const recentTransactions = allTransactions.slice(0, 10);
+            
+            // Atualizar lista de todas as transações
+            const allTransactionsList = document.getElementById('allTransactions');
+            if (recentTransactions.length === 0) {
+                allTransactionsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-receipt"></i>
+                        <p>Nenhuma transação registrada</p>
+                    </div>
+                `;
+            } else {
+                allTransactionsList.innerHTML = recentTransactions.map(transaction => {
+                    if (transaction.type === 'expense') {
+                        return createExpenseItem(transaction);
+                    } else if (transaction.type === 'income') {
+                        return createIncomeItem(transaction);
+                    } else if (transaction.type === 'loan') {
+                        return createLoanItem(transaction);
+                    }
+                }).join('');
+            }
+            
+            // Atualizar lista de despesas
+            const expensesList = document.getElementById('expensesList');
+            const recentExpenses = [...transactions.expenses]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+                
+            if (recentExpenses.length === 0) {
+                expensesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <p>Nenhuma despesa registrada</p>
+                    </div>
+                `;
+            } else {
+                expensesList.innerHTML = recentExpenses.map(expense => createExpenseItem(expense)).join('');
+            }
+            
+            // Atualizar lista de receitas
+            const incomeList = document.getElementById('incomeList');
+            const recentIncome = [...transactions.income]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+                
+            if (recentIncome.length === 0) {
+                incomeList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-coins"></i>
+                        <p>Nenhuma receita registrada</p>
+                    </div>
+                `;
+            } else {
+                incomeList.innerHTML = recentIncome.map(income => createIncomeItem(income)).join('');
+            }
+            
+            // Atualizar lista de empréstimos
+            const loansList = document.getElementById('loansList');
+            const recentLoans = [...transactions.loans]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 10);
+                
+            if (recentLoans.length === 0) {
+                loansList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-hand-holding-usd"></i>
+                        <p>Nenhum empréstimo registrado</p>
+                    </div>
+                `;
+            } else {
+                loansList.innerHTML = recentLoans.map(loan => createLoanItem(loan)).join('');
+            }
+        }
+        
+        // Função para criar item de despesa
+        function createExpenseItem(expense) {
+            const categoryName = getCategoryName(expense.category);
+            const categoryIcon = getCategoryIcon(expense.category);
+            
+            return `
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon" style="background-color: rgba(247, 37, 133, 0.2); color: var(--danger);">
+                            <i class="${categoryIcon}"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${expense.description}</h4>
+                            <p>${categoryName} • ${formatDate(expense.date)}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount negative">
+                        - ${formatCurrency(expense.value)}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Função para criar item de receita
+        function createIncomeItem(income) {
+            const categoryName = getCategoryName(income.category);
+            const categoryIcon = getCategoryIcon(income.category);
+            
+            return `
+                <div class="transaction-item">
+                    <div class="transaction-info">
+                        <div class="transaction-icon" style="background-color: rgba(76, 201, 240, 0.2); color: var(--success);">
+                            <i class="${categoryIcon}"></i>
+                        </div>
+                        <div class="transaction-details">
+                            <h4>${income.description}</h4>
+                            <p>${categoryName} • ${formatDate(income.date)}</p>
+                        </div>
+                    </div>
+                    <div class="transaction-amount positive">
+                        + ${formatCurrency(income.value)}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Função para criar item de empréstimo
+        function createLoanItem(loan) {
+            const typeText = loan.type === 'emprestado' ? 'Emprestado' : 'Tomado';
+            const typeColor = loan.type === 'emprestado' ? 'var(--warning)' : 'var(--danger)';
+            const statusText = loan.status === 'pendente' ? 'Pendente' : 'Pago';
+            const statusColor = loan.status === 'pendente' ? 'var(--warning)' : 'var(--success)';
+            
+            return `
+                <div class="loan-item">
+                    <div class="loan-info">
+                        <div class="loan-details">
+                            <h4>${loan.description}</h4>
+                            <p>${typeText} • ${formatDate(loan.date)}</p>
+                            <p>Vencimento: ${formatDate(loan.dueDate)}</p>
+                        </div>
+                    </div>
+                    <div class="loan-amount" style="color: ${typeColor};">
+                        ${formatCurrency(loan.value)}
+                    </div>
+                    <div class="loan-actions">
+                        <span style="color: ${statusColor}; font-weight: 500;">${statusText}</span>
+                        ${loan.status === 'pendente' ? `
+                            <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;" onclick="payLoan(${loan.id})">
+                                <i class="fas fa-check"></i> Pagar
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Função para pagar empréstimo
+        function payLoan(loanId) {
+            const loanIndex = transactions.loans.findIndex(l => l.id === loanId);
+            if (loanIndex !== -1) {
+                transactions.loans[loanIndex].status = 'pago';
+                updateDashboard();
+                loadRecentTransactions();
+                showNotification('Empréstimo marcado como pago!', 'success');
+            }
+        }
+        
+        // Função para mostrar notificação
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Função para formatar moeda
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+        }
+        
+        // Função para formatar data
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('pt-BR');
+        }
+        
+        // Função para obter nome da categoria
+        function getCategoryName(category) {
+            const categories = {
+                'alimentacao': 'Alimentação',
+                'transporte': 'Transporte',
+                'moradia': 'Moradia',
+                'saude': 'Saúde',
+                'lazer': 'Lazer',
+                'educacao': 'Educação',
+                'salario': 'Salário',
+                'freelancer': 'Freelancer',
+                'investimentos': 'Investimentos',
+                'presente': 'Presente',
+                'outros': 'Outros'
+            };
+            
+            return categories[category] || category;
+        }
+        
+        // Função para obter ícone da categoria
+        function getCategoryIcon(category) {
+            const icons = {
+                'alimentacao': 'fas fa-utensils',
+                'transporte': 'fas fa-bus',
+                'moradia': 'fas fa-home',
+                'saude': 'fas fa-heartbeat',
+                'lazer': 'fas fa-gamepad',
+                'educacao': 'fas fa-graduation-cap',
+                'salario': 'fas fa-money-bill-wave',
+                'freelancer': 'fas fa-laptop',
+                'investimentos': 'fas fa-chart-line',
+                'presente': 'fas fa-gift',
+                'outros': 'fas fa-ellipsis-h'
+            };
+            
+            return icons[category] || 'fas fa-tag';
+        }
+    </script>
+</body>
+</html>
